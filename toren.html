@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💧 Toren Master Pro - By Benz</title>
+    <link rel="stylesheet" href="toren.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="achievement" id="achievement">
+        <div class="achievement-icon">🏆</div>
+        <div class="achievement-text">
+            <h4>Prestasi Terbuka!</h4>
+            <p id="achievementText">Prestasi</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>💧 Toren Master Pro</h1>
+            <p class="subtitle">Kelola Sumur, Listrik, dan Toren untuk Keuntungan Maksimal</p>
+        </header>
+
+        <div class="status-bar" id="statusBar">
+            <div class="status-pill active" id="statusAuto">🤖 Mode: Manual</div>
+            <div class="status-pill" id="statusRefill">⏳ Refill: Standby</div>
+        </div>
+
+        <div class="game-grid">
+            <!-- Sumur Card -->
+            <div class="card">
+                <div class="card-title">🕳️ Sumur Air</div>
+                
+                <div class="sumur-container">
+                    <div class="sumur-wrapper">
+                        <div class="sumur">
+                            <div class="sumur-water" id="sumurWater" style="height: 100%"></div>
+                            <div class="sumur-label" id="sumurPercent">100%</div>
+                            <div class="sumur-depth">Lv.<span id="sumurLevel">1</span></div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-box wide">
+                            <div class="stat-icon">🌊</div>
+                            <div class="stat-value" id="sumberAirVal">100</div>
+                            <div class="stat-label">Sumber Air Tersedia</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Air Sumur</span>
+                            <span id="sumurText">100/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill air-fill" id="sumurBar" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="refill-indicator">
+                        <span>⚡ Refill:</span>
+                        <div class="refill-bar">
+                            <div class="refill-progress" id="refillProgress" style="width: 0%"></div>
+                        </div>
+                        <span id="refillRate">+5/3s</span>
+                    </div>
+
+                    <div class="info-box upgrade">
+                        <strong>📊 Level Sumur:</strong> <span id="sumurInfo">Kedalaman 10m</span><br>
+                        <small>Kecepatan refill: <span id="refillInfo">5 unit / 3 detik</span></small>
+                    </div>
+
+                    <button class="btn btn-purple" id="btnUpgradeSumur" onclick="game.upgradeSumur()">
+                        🔧 Upgrade Sumur<br>
+                        <small style="font-size: 0.8rem;">Rp <span id="upgradeCost">100</span> → Kedalaman +10m</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Toren Card -->
+            <div class="card">
+                <div class="card-title">🏗️ Toren Penyimpanan</div>
+                
+                <div class="sumur-container">
+                    <div class="toren-wrapper">
+                        <div class="toren">
+                            <div class="toren-water" id="torenWater" style="height: 0%"></div>
+                            <div class="toren-label" id="torenPercent">0%</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-box wide">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value" id="moneyVal">Rp 0</div>
+                            <div class="stat-label">Total Keuntungan</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Kapasitas Toren</span>
+                            <span id="torenText">0/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill water-fill" id="torenBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>💡 Info:</strong><br>
+                        • Jual saat penuh (100%) = <span style="color: var(--success);">Rp 3/unit</span><br>
+                        • Jual sebagian = <span style="color: var(--warning);">Rp 2/unit</span>
+                    </div>
+
+                    <button class="btn btn-success" id="btnSell" onclick="game.sellAir()">
+                        💸 Jual Air<br>
+                        <small style="font-size: 0.8rem;">Kosongkan → Dapat Uang</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Control Card -->
+            <div class="card">
+                <div class="card-title">⚡ Panel Kontrol</div>
+                
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-box">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-value" id="listrikVal">10</div>
+                        <div class="stat-label">Listrik</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">🔋</div>
+                        <div class="stat-value" id="listrikCost">1</div>
+                        <div class="stat-label">Cost/Isi</div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Listrik Tersedia</span>
+                        <span id="listrikText">10/10</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill electric-fill" id="listrikBar" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="toggle-container">
+                    <div class="toggle-label">
+                        <span id="modeIcon">👆</span>
+                        <span id="modeText">Mode Manual</span>
+                    </div>
+                    <div class="toggle-switch" id="toggleMode" onclick="game.toggleMode()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="btnFill" onclick="game.manualFill()">
+                    🚰 Isi Toren (Manual)<br>
+                    <small style="font-size: 0.8rem;">-1 Listrik | +20 Air</small>
+                </button>
+
+                <button class="btn btn-warning" id="btnPay" onclick="game.payListrik()">
+                    💳 Beli Listrik<br>
+                    <small style="font-size: 0.8rem;">Rp 50 = +10 Listrik</small>
+                </button>
+
+                <div class="info-box" style="margin-top: 15px;">
+                    <strong>🎮 Cara Kerja:</strong><br>
+                    1. Sumur refill air otomatis<br>
+                    2. Isi toren pakai listrik<br>
+                    3. Jual air → beli listrik & upgrade sumur<br>
+                    4. Profit!
+                </div>
+            </div>
+        </div>
+
+        <!-- Log -->
+        <div class="log-container" id="logContainer">
+            <div class="log-title">
+                <span>📜</span> Riwayat Aktivitas
+            </div>
+            <div id="logContent"></div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="copyright">
+            <p>© 2024 <strong>By Benz</strong> | Toren Master Pro</p>
+            <p style="font-size: 0.8rem; margin-top: 5px;">Portfolio Project | Built with passion</p>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">⚠️</div>
+            <h2 id="modalTitle">Peringatan</h2>
+            <p id="modalMessage">Pesan</p>
+            <button class="btn btn-primary" onclick="game.closeModal()" style="min-width: 150px;">Mengerti</button>
+        </div>
+    </div>
+
+    <script>
+/**
+ * Toren Master Pro - Game Logic
+ * Created by Benz
+ * Portfolio Project 2024
+ */
+
+class TorenMasterGame {
+    constructor() {
+        // Game State
+        this.state = {
+            toren: 0,
+            listrik: 10,
+            sumberAir: 100,
+            maxSumberAir: 100,
+            money: 0,
+            maxToren: 100,
+            sumurLevel: 1,
+            sumurDepth: 10,
+            isAutoMode: false,
+            isAutoFilling: false,
+            achievements: new Set()
+        };
+
+        // Configuration
+        this.config = {
+            baseRefillRate: 5,
+            baseRefillTime: 3000,
+            fillAmount: 20,
+            listrikCost: 1,
+            upgradeBaseCost: 100
+        };
+
+        // Timers
+        this.timers = {
+            refill: null,
+            autoFill: null,
+            retry: null
+        };
+
+        this.refillProgress = 0;
+        
+        this.init();
+    }
+
+    // Initialization
+    init() {
+        this.createParticles();
+        this.updateUI();
+        this.startRefillSystem();
+        this.addLog('Selamat datang! Sumur mulai mengisi air secara otomatis.', 'info');
+        
+        setTimeout(() => {
+            this.showModal('Selamat Datang!', 
+                '💧 Sumur mengisi air otomatis berdasarkan kedalamannya.\n' +
+                '⚡ Gunakan listrik untuk memompa air ke toren.\n' +
+                '💰 Jual air untuk profit dan upgrade sumur!', '🎉');
+        }, 500);
+    }
+
+    createParticles() {
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+            container.appendChild(particle);
+        }
+    }
+
+    // Refill System
+    startRefillSystem() {
+        if (this.timers.refill) clearInterval(this.timers.refill);
+        
+        this.timers.refill = setInterval(() => {
+            if (this.state.sumberAir < this.state.maxSumberAir) {
+                const refillAmount = this.getRefillAmount();
+                const oldAir = this.state.sumberAir;
+                this.state.sumberAir = Math.min(this.state.maxSumberAir, this.state.sumberAir + refillAmount);
+                
+                if (this.state.sumberAir > oldAir) {
+                    this.addLog(`Sumur refill otomatis: +${this.state.sumberAir - oldAir} air`, 'info');
+                    this.updateUI();
+                    
+                    if (this.state.isAutoMode && !this.state.isAutoFilling && !this.timers.autoFill) {
+                        this.checkAndRestartAutoFill();
+                    }
+                }
+            }
+            this.refillProgress = 0;
+        }, this.getRefillTime());
+        
+        setInterval(() => {
+            if (this.state.sumberAir < this.state.maxSumberAir) {
+                this.refillProgress += 100 / (this.getRefillTime() / 100);
+                if (this.refillProgress > 100) this.refillProgress = 0;
+                document.getElementById('refillProgress').style.width = this.refillProgress + '%';
+            }
+        }, 100);
+    }
+
+    getRefillAmount() {
+        return this.config.baseRefillRate * this.state.sumurLevel;
+    }
+
+    getRefillTime() {
+        return Math.max(1000, this.config.baseRefillTime - (this.state.sumurLevel - 1) * 200);
+    }
+
+    getUpgradeCost() {
+        return this.config.upgradeBaseCost * this.state.sumurLevel;
+    }
+
+    // Auto-Fill Logic
+    checkAndRestartAutoFill() {
+        if (!this.state.isAutoMode) return;
+        
+        if (this.state.listrik >= this.config.listrikCost && 
+            this.state.sumberAir > 0 && 
+            this.state.toren < this.state.maxToren) {
+            
+            this.addLog('🔄 Auto-fill melanjutkan... Resource tersedia!', 'success');
+            this.startAutoFill();
+        } else if (this.state.isAutoMode) {
+            const reason = this.state.listrik <= 0 ? 'listrik' : 
+                          this.state.sumberAir <= 0 ? 'air' : 'toren penuh';
+            this.addLog(`⏳ Auto-fill menunggu ${reason}...`, 'warning');
+            
+            if (this.timers.retry) clearTimeout(this.timers.retry);
+            this.timers.retry = setTimeout(() => {
+                this.checkAndRestartAutoFill();
+            }, 500);
+        }
+    }
+
+    // Fill Actions
+    manualFill() {
+        if (this.state.isAutoMode) return;
+        this.performFill();
+    }
+
+    performFill() {
+        if (this.state.toren >= this.state.maxToren) {
+            if (!this.state.isAutoMode) {
+                this.showModal('Toren Penuh!', 'Toren sudah penuh! Jual air terlebih dahulu.', '💧');
+            }
+            this.stopAutoFill();
+            if (this.state.isAutoMode) {
+                this.checkAndRestartAutoFill();
+            }
+            return false;
+        }
+
+        if (this.state.listrik < this.config.listrikCost) {
+            if (!this.state.isAutoMode) {
+                this.showModal('Listrik Habis!', 'Listrik tidak cukup! Beli listrik atau tunggu (jika auto).', '⚡');
+            }
+            this.stopAutoFill();
+            this.checkAndRestartAutoFill();
+            return false;
+        }
+
+        if (this.state.sumberAir <= 0) {
+            if (!this.state.isAutoMode) {
+                this.showModal('Air Habis!', 'Sumber air dari sumur habis! Tunggu refill otomatis.', '🌊');
+            }
+            this.stopAutoFill();
+            this.checkAndRestartAutoFill();
+            return false;
+        }
+
+        const kebutuhan = this.state.maxToren - this.state.toren;
+        const airTersedia = Math.min(this.config.fillAmount, this.state.sumberAir);
+        const bisaDiisi = Math.min(kebutuhan, airTersedia);
+
+        this.state.toren += bisaDiisi;
+        this.state.listrik -= this.config.listrikCost;
+        this.state.sumberAir -= bisaDiisi;
+
+        if (!this.state.isAutoMode) {
+            this.addLog(`Mengisi ${bisaDiisi}% air. Listrik -${this.config.listrikCost}`, 'success');
+        }
+
+        if (this.state.toren >= this.state.maxToren) {
+            this.addLog('🎉 TOREN PENUH! Siap dijual dengan harga premium!', 'success');
+            this.showAchievement('Toren Master');
+            this.stopAutoFill();
+            if (this.state.isAutoMode) {
+                this.addLog('🤖 Auto-fill standby - menunggu penjualan...', 'warning');
+                this.checkAndRestartAutoFill();
+            }
+        }
+
+        this.updateUI();
+        return true;
+    }
+
+    // Mode Toggle
+    toggleMode() {
+        this.state.isAutoMode = !this.state.isAutoMode;
+        const toggle = document.getElementById('toggleMode');
+        const modeText = document.getElementById('modeText');
+        const modeIcon = document.getElementById('modeIcon');
+        const btnFill = document.getElementById('btnFill');
+        const statusAuto = document.getElementById('statusAuto');
+
+        if (this.state.isAutoMode) {
+            toggle.classList.add('active');
+            modeText.textContent = 'Mode Auto';
+            modeIcon.textContent = '🤖';
+            btnFill.innerHTML = '🛑 Stop Auto Fill<br><small style="font-size: 0.8rem;">Hentikan pengisian otomatis</small>';
+            btnFill.classList.remove('btn-primary');
+            btnFill.classList.add('btn-warning');
+            btnFill.onclick = () => this.stopAutoFill();
+            btnFill.disabled = false;
+            statusAuto.textContent = '🤖 Mode: Auto';
+            statusAuto.classList.add('active');
+            
+            this.addLog('Mode Auto aktif! Toren akan terisi otomatis.', 'info');
+            this.startAutoFill();
+        } else {
+            toggle.classList.remove('active');
+            modeText.textContent = 'Mode Manual';
+            modeIcon.textContent = '👆';
+            btnFill.innerHTML = '🚰 Isi Toren (Manual)<br><small style="font-size: 0.8rem;">-1 Listrik | +20 Air</small>';
+            btnFill.classList.remove('btn-warning');
+            btnFill.classList.add('btn-primary');
+            btnFill.onclick = () => this.manualFill();
+            statusAuto.textContent = '👆 Mode: Manual';
+            statusAuto.classList.remove('active');
+            
+            this.stopAutoFill();
+            this.addLog('Mode Manual aktif.', 'info');
+        }
+        this.updateUI();
+    }
+
+    startAutoFill() {
+        if (this.timers.autoFill) return;
+        
+        this.state.isAutoFilling = true;
+        document.getElementById('statusRefill').textContent = '🔥 Auto Fill Aktif';
+        document.getElementById('statusRefill').classList.add('warning');
+        
+        this.performFill();
+        
+        this.timers.autoFill = setInterval(() => {
+            if (!this.performFill()) {
+                if (this.state.isAutoMode) {
+                    this.checkAndRestartAutoFill();
+                }
+            }
+        }, 1000);
+    }
+
+    stopAutoFill() {
+        this.state.isAutoFilling = false;
+        if (this.timers.autoFill) {
+            clearInterval(this.timers.autoFill);
+            this.timers.autoFill = null;
+        }
+        document.getElementById('statusRefill').textContent = '⏳ Standby';
+        document.getElementById('statusRefill').classList.remove('warning');
+    }
+
+    // Pay Listrik
+    payListrik() {
+        const cost = 50;
+        const gain = 10;
+
+        if (this.state.money < cost) {
+            this.showModal('Uang Tidak Cukup!', `Butuh Rp ${cost} untuk membeli ${gain} listrik. Jual air terlebih dahulu!`, '💸');
+            return;
+        }
+
+        this.state.money -= cost;
+        this.state.listrik += gain;
+        this.addLog(`Membeli ${gain} listrik seharga Rp ${cost}`, 'success');
+        
+        if (this.state.isAutoMode && !this.timers.autoFill && this.state.toren < this.state.maxToren) {
+            this.checkAndRestartAutoFill();
+        }
+        
+        this.updateUI();
+    }
+
+    // Upgrade Sumur
+    upgradeSumur() {
+        const cost = this.getUpgradeCost();
+        
+        if (this.state.money < cost) {
+            this.showModal('Uang Tidak Cukup!', `Butuh Rp ${cost} untuk upgrade sumur ke level ${this.state.sumurLevel + 1}.`, '🔧');
+            return;
+        }
+
+        this.state.money -= cost;
+        this.state.sumurLevel++;
+        this.state.sumurDepth += 10;
+        this.state.maxSumberAir += 50;
+
+        this.addLog(`Upgrade sumur ke Level ${this.state.sumurLevel}! Kedalaman: ${this.state.sumurDepth}m`, 'success');
+        this.showAchievement(`Sumur Level ${this.state.sumurLevel}`);
+        
+        this.startRefillSystem();
+        this.updateUI();
+    }
+
+    // Sell Air
+    sellAir() {
+        if (this.state.toren <= 0) {
+            this.showModal('Toren Kosong!', 'Tidak ada air yang bisa dijual.', '💨');
+            return;
+        }
+
+        let hargaPerUnit = 2;
+        let bonus = '';
+        
+        if (this.state.toren === 100) {
+            hargaPerUnit = 3;
+            bonus = ' (Bonus Premium!)';
+        }
+
+        const pendapatan = this.state.toren * hargaPerUnit;
+        
+        if (this.state.toren < 100) {
+            const konfirmasi = confirm(`Toren ${this.state.toren}% (belum penuh).\nHarga: Rp ${hargaPerUnit}/unit = Rp ${pendapatan}\n\nYakin mau jual sekarang? (OK untuk jual, Cancel untuk tunggu 100%)`);
+            if (!konfirmasi) return;
+        }
+
+        this.state.money += pendapatan;
+        const terjual = this.state.toren;
+        this.state.toren = 0;
+
+        this.addLog(`Menjual ${terjual}% air = Rp ${pendapatan}${bonus}`, 'success');
+        
+        if (terjual === 100) {
+            this.showAchievement('Penjualan Sempurna');
+        }
+        
+        if (this.state.isAutoMode) {
+            this.addLog('🤖 Auto-fill melanjutkan setelah penjualan...', 'success');
+            setTimeout(() => {
+                this.checkAndRestartAutoFill();
+            }, 500);
+        }
+        
+        this.updateUI();
+    }
+
+    // UI Updates
+    updateUI() {
+        const sumurPercent = (this.state.sumberAir / this.state.maxSumberAir) * 100;
+        document.getElementById('sumurWater').style.height = sumurPercent + '%';
+        document.getElementById('sumurPercent').textContent = Math.floor(sumurPercent) + '%';
+        document.getElementById('sumberAirVal').textContent = Math.floor(this.state.sumberAir);
+        document.getElementById('sumurBar').style.width = sumurPercent + '%';
+        document.getElementById('sumurText').textContent = `${Math.floor(this.state.sumberAir)}/${this.state.maxSumberAir}`;
+        document.getElementById('sumurLevel').textContent = this.state.sumurLevel;
+        document.getElementById('sumurInfo').textContent = `Kedalaman ${this.state.sumurDepth}m`;
+        document.getElementById('refillInfo').textContent = `+${this.getRefillAmount()} unit / ${this.getRefillTime()/1000}s`;
+        document.getElementById('refillRate').textContent = `+${this.getRefillAmount()}/${this.getRefillTime()/1000}s`;
+        document.getElementById('upgradeCost').textContent = this.getUpgradeCost();
+
+        document.getElementById('torenWater').style.height = this.state.toren + '%';
+        document.getElementById('torenPercent').textContent = this.state.toren + '%';
+        document.getElementById('torenBar').style.width = this.state.toren + '%';
+        document.getElementById('torenText').textContent = `${this.state.toren}/${this.state.maxToren}`;
+        document.getElementById('moneyVal').textContent = 'Rp ' + this.state.money.toLocaleString();
+
+        document.getElementById('listrikVal').textContent = this.state.listrik;
+        document.getElementById('listrikBar').style.width = Math.min(100, (this.state.listrik / 20) * 100) + '%';
+        document.getElementById('listrikText').textContent = this.state.listrik + '/20';
+
+        const canFill = this.state.toren < 100 && this.state.listrik >= this.config.listrikCost && this.state.sumberAir > 0;
+        document.getElementById('btnFill').disabled = !this.state.isAutoMode && !canFill;
+        document.getElementById('btnPay').disabled = this.state.money < 50;
+        document.getElementById('btnSell').disabled = this.state.toren <= 0;
+        document.getElementById('btnUpgradeSumur').disabled = this.state.money < this.getUpgradeCost();
+
+        if (this.state.toren >= 100) {
+            document.getElementById('torenWater').style.background = 'linear-gradient(180deg, #4ecdc4, #00d4ff)';
+        } else if (this.state.toren > 50) {
+            document.getElementById('torenWater').style.background = 'linear-gradient(180deg, #00d4ff, #0099cc)';
+        } else {
+            document.getElementById('torenWater').style.background = 'linear-gradient(180deg, #ff6b6b, #ee5a6f)';
+        }
+    }
+
+    // Achievement System
+    showAchievement(text) {
+        if (this.state.achievements.has(text)) return;
+        this.state.achievements.add(text);
+        
+        const achievement = document.getElementById('achievement');
+        document.getElementById('achievementText').textContent = text;
+        achievement.classList.add('show');
+        setTimeout(() => {
+            achievement.classList.remove('show');
+        }, 3000);
+    }
+
+    // Log System
+    addLog(message, type = 'info') {
+        const logContent = document.getElementById('logContent');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        
+        const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        entry.innerHTML = `<span class="timestamp">${time}</span>${message}`;
+        
+        logContent.insertBefore(entry, logContent.firstChild);
+        
+        while (logContent.children.length > 15) {
+            logContent.removeChild(logContent.lastChild);
+        }
+    }
+
+    // Modal
+    showModal(title, message, icon = '⚠️') {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMessage').textContent = message;
+        document.getElementById('modalIcon').textContent = icon;
+        document.getElementById('modal').classList.add('active');
+    }
+
+    closeModal() {
+        document.getElementById('modal').classList.remove('active');
+    }
+}
+
+// Initialize Game
+const game = new TorenMasterGame();
+
+
+
+</script>
+</body>
+</html>
