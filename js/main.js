@@ -10,13 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const systemFiles = [
         {
-            name: "portfolio.html",
+            name: "fortofolio.html",
             type: "page",
             status: "live",
             size: "12.4 KB",
             edited: "2h ago",
             description: "Main portfolio website",
-            url:"https://project-showcase-mauve.vercel.app/fortofolio.html"
+            url: "https://project-showcase-mauve.vercel.app/fortofolio.html"
         },
         {
             name: "toren master.html",
@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
             status: "live",
             size: "8.2 KB",
             edited: "1d ago",
-            description: "game fill water into the tower and sell it then upgrade ",
-            url:"https://project-showcase-mauve.vercel.app/toren.html"
+            description: "game fill sell water and upgrade ",
+            url: "https://project-showcase-mauve.vercel.app/toren.html"
         },
         {
             name: "blog.html",
@@ -60,7 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inisialisasi AudioContext (harus setelah interaksi user)
     function initAudio() {
         if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                // Audio tidak didukung, silent fail
+            }
+        }
+        // Resume audio context jika suspended (browser policy)
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
         }
     }
 
@@ -108,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // PRELOADER / BOOT SEQUENCE
+    // PRELOADER / BOOT SEQUENCE — FIX STUCK ISSUE
     // ==========================================
     const preloader = document.getElementById('preloader');
     const loadingBar = document.getElementById('loading-bar');
@@ -118,9 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.getElementById('main-content');
 
     let progress = 0;
-    const totalDuration = 2500; // 2.5 detik
-    const intervalTime = 25; // Update setiap 25ms
-    const increment = 100 / (totalDuration / intervalTime);
+    let bootInterval = null;
 
     const statusTexts = [
         { threshold: 0, text: "Connecting to server..." },
@@ -129,30 +135,43 @@ document.addEventListener('DOMContentLoaded', () => {
         { threshold: 90, text: "Finalizing..." }
     ];
 
-    const bootInterval = setInterval(() => {
-        progress += increment;
-
-        if (progress >= 100) {
-            progress = 100;
-            clearInterval(bootInterval);
-
-            // Tampilkan checkmark dan tombol ENTER
-            setTimeout(() => {
-                if (loadingBar) loadingBar.style.width = '100%';
-                if (loadingStatus) loadingStatus.style.display = 'none';
-                if (preloaderComplete) preloaderComplete.classList.remove('hidden');
-            }, 300);
+    function updateStatusText(pct) {
+        if (!loadingStatus) return;
+        for (let i = statusTexts.length - 1; i >= 0; i--) {
+            if (pct >= statusTexts[i].threshold) {
+                loadingStatus.textContent = statusTexts[i].text;
+                break;
+            }
         }
+    }
 
-        if (loadingBar) loadingBar.style.width = progress + '%';
+    function startBootSequence() {
+        const totalDuration = 2500; // 2.5 detik
+        const intervalTime = 30; // Update setiap 30ms
+        const increment = 100 / (totalDuration / intervalTime);
 
-        // Update status text berdasarkan progress
-        const currentStatus = statusTexts.reverse().find(s => progress >= s.threshold);
-        statusTexts.reverse(); // Reset array
-        if (currentStatus && loadingStatus) {
-            loadingStatus.textContent = currentStatus.text;
-        }
-    }, intervalTime);
+        bootInterval = setInterval(() => {
+            progress += increment;
+
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(bootInterval);
+
+                // Tampilkan checkmark dan tombol ENTER
+                setTimeout(() => {
+                    if (loadingBar) loadingBar.style.width = '100%';
+                    if (loadingStatus) loadingStatus.style.display = 'none';
+                    if (preloaderComplete) preloaderComplete.classList.remove('hidden');
+                }, 300);
+            }
+
+            if (loadingBar) loadingBar.style.width = progress + '%';
+            updateStatusText(progress);
+        }, intervalTime);
+    }
+
+    // Mulai boot sequence langsung tanpa nunggu apa-apa
+    startBootSequence();
 
     // Tombol ENTER SYSTEM — harus diklik user
     if (enterSystemBtn) {
@@ -493,35 +512,32 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         open: {
-    description: 'Buka file di browser',
-    execute: (args) => {
-        if (!args || args.length === 0) {
-            addTerminalLine('Usage: open <filename>', 'error');
-            return;
-        }
-        
-        const filename = args[0];
-        const file = systemFiles.find(f => f.name.toLowerCase() === filename.toLowerCase());
-        
-        if (!file) {
-            addTerminalLine(`File not found: ${filename}`, 'error');
-            return;
-        }
-        
-        if (file.status === 'offline') {
-            addTerminalLine(`Cannot open: ${filename} is offline`, 'error');
-            return;
-        }
-        
-        addTerminalLine(`Opening ${filename}...`, 'success');
-        
-        // FIX: Pakai location.href untuk semua URL (lokal & external)
-        setTimeout(() => {
-            window.location.href = file.url;
-        }, 500);
-    }
-}
+            description: 'Buka file di browser',
+            execute: (args) => {
+                if (!args || args.length === 0) {
+                    addTerminalLine('Usage: open <filename>', 'error');
+                    return;
+                }
 
+                const filename = args[0];
+                const file = systemFiles.find(f => f.name.toLowerCase() === filename.toLowerCase());
+
+                if (!file) {
+                    addTerminalLine(`File not found: ${filename}`, 'error');
+                    return;
+                }
+
+                if (file.status === 'offline') {
+                    addTerminalLine(`Cannot open: ${filename} is offline`, 'error');
+                    return;
+                }
+
+                addTerminalLine(`Opening ${filename}...`, 'success');
+                setTimeout(() => {
+                    window.open(file.url, '_blank');
+                }, 500);
+            }
+        }
     };
 
     // Event listener untuk input terminal
@@ -612,91 +628,107 @@ document.addEventListener('DOMContentLoaded', () => {
     // PARTICLE SYSTEM — Canvas background
     // ==========================================
     const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
+
+    // Cek apakah device touch/HP — kalau iya, kurangi partikel biar gak lag
+    const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const particleCount = isTouchDevice ? 20 : 40; // HP: 20 partikel, Desktop: 40
 
     let particles = [];
-    const particleCount = 40; // Jumlah partikel 30-50
     const connectionDistance = 100; // Jarak maksimal untuk garis koneksi
 
-    // Resize canvas ke ukuran viewport
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
 
-    // Kelas Particle
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 1.5 + 1; // Ukuran 2-3px
-            this.speedX = (Math.random() - 0.5) * 0.3; // Gerak lambat
-            this.speedY = (Math.random() - 0.5) * 0.3;
-            this.opacity = Math.random() * 0.2 + 0.2; // Opacity 20-40%
+        // Resize canvas ke ukuran viewport
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Kelas Particle
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 1; // Ukuran 2-3px
+                this.speedX = (Math.random() - 0.5) * 0.3; // Gerak lambat
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.2 + 0.2; // Opacity 20-40%
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Bounce di tepi layar
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(96, 165, 253, ${this.opacity})`; // #60A5FD
+                ctx.fill();
+            }
         }
 
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-
-            // Bounce di tepi layar
-            if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+        // Inisialisasi partikel
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
         }
+        initParticles();
 
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(96, 165, 253, ${this.opacity})`; // #60A5FD
-            ctx.fill();
-        }
-    }
+        // Gambar garis koneksi antar partikel
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Inisialisasi partikel
-    function initParticles() {
-        particles = [];
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-    }
-    initParticles();
-
-    // Gambar garis koneksi antar partikel
-    function drawConnections() {
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < connectionDistance) {
-                    const opacity = (1 - distance / connectionDistance) * 0.15;
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = `rgba(96, 165, 253, ${opacity})`; // #60A5FD
-                    ctx.lineWidth = 1;
-                    ctx.stroke();
+                    if (distance < connectionDistance) {
+                        const opacity = (1 - distance / connectionDistance) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(96, 165, 253, ${opacity})`; // #60A5FD
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
                 }
             }
         }
-    }
 
-    // Animation loop
-    function animateParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Animation loop
+        let animationId;
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        particles.forEach(particle => {
-            particle.update();
-            particle.draw();
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            drawConnections();
+            animationId = requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Pause animation saat tab tidak aktif (hemat baterai HP)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                cancelAnimationFrame(animationId);
+            } else {
+                animateParticles();
+            }
         });
-
-        drawConnections();
-        requestAnimationFrame(animateParticles);
     }
-    animateParticles();
 
     // ==========================================
     // SCROLL REVEAL (IntersectionObserver)
