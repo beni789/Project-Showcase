@@ -1,253 +1,253 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BENZ.SYSTEM</title>
 
-        <link
-            href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"
-            rel="stylesheet"
-        />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-        <link rel="stylesheet" href="assets/css/styles.css" />
-        
-        <script
-        src="https://pl28828787.effectivegatecpm.com/d0/4b/b3/d04bb3fbe4cf2e18d156d041789706ad.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-        <title>Project WebDev</title>
-    </head>
-    <body>
-        <i class="ri-moon-line change-theme" id="theme-button"></i>
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
 
-        <header class="profile container">
-            <div class="profile__container grid">
-                <div class="profile__data">
-                    <div class="profile__border">
-                        <div class="profile__perfil">
-                            <img
-                                src="assets/img/profile.png"
-                                alt="Profile Image"
-                            />
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+<body class="bg-[#0A0F1C] text-[#F1F5F9] font-mono antialiased overflow-x-hidden">
+
+    <!-- ============================================ -->
+    <!-- PRELOADER / BOOT SEQUENCE                    -->
+    <!-- ============================================ -->
+    <div id="preloader" class="fixed inset-0 z-[9999] bg-[#0A0F1C] flex flex-col items-center justify-center">
+        <p class="text-[#94A3B8] text-sm mb-4">User Joining to client server...</p>
+
+        <!-- Progress Bar Container -->
+        <div class="w-[300px] h-1 bg-[#1E293B] rounded-full overflow-hidden mb-3">
+            <div id="loading-bar" class="h-full bg-[#3B82F6] rounded-full" style="width: 0%"></div>
+        </div>
+
+        <!-- Status Text -->
+        <p id="loading-status" class="text-[#64748B] text-xs mb-6">Connecting to server...</p>
+
+        <!-- Checkmark & Enter Button (hidden dulu) -->
+        <div id="preloader-complete" class="hidden flex flex-col items-center">
+            <div class="text-[#22C55E] text-2xl mb-2">✓</div>
+            <p class="text-[#F1F5F9] text-sm mb-4">Join to sistem</p>
+            <button id="enter-system-btn" class="border border-[#3B82F6] text-[#3B82F6] px-8 py-2 rounded font-mono text-sm hover:bg-[#3B82F6] hover:text-[#0A0F1C] transition-all duration-300">
+                ENTER SYSTEM
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- BACKGROUND EFFECTS                           -->
+    <!-- ============================================ -->
+    <!-- Aurora Gradient -->
+    <div id="aurora-bg" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- Particle Canvas -->
+    <canvas id="particle-canvas" class="fixed inset-0 pointer-events-none z-[1]"></canvas>
+
+    <!-- Scanline Overlay -->
+    <div class="fixed inset-0 pointer-events-none z-[9998]" style="
+        background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 4px,
+            rgba(0,0,0,0.03) 4px,
+            rgba(0,0,0,0.03) 5px
+        );
+    "></div>
+
+    <!-- ============================================ -->
+    <!-- CUSTOM CURSOR                                -->
+    <!-- ============================================ -->
+    <div id="cursor" class="fixed w-5 h-5 rounded-full border-2 border-[#3B82F6] pointer-events-none z-[9997] transition-transform duration-100 hidden md:block" style="transform: translate(-50%, -50%);"></div>
+
+    <!-- ============================================ -->
+    <!-- HEADER                                       -->
+    <!-- ============================================ -->
+    <header id="header" class="fixed top-0 left-0 right-0 h-[60px] bg-[#0A0F1C]/80 backdrop-blur-md border-b border-[#1E293B] z-50 flex items-center justify-between px-6">
+        <!-- Logo -->
+        <div class="flex flex-col">
+            <span class="text-sm font-medium text-[#F1F5F9]">> BENZ.SYSTEM</span>
+            <span class="text-[10px] text-[#64748B]">vPre1.0.0</span>
+        </div>
+
+        <!-- Right Elements -->
+        <div class="flex items-center gap-4">
+            <!-- Network Status -->
+            <div class="flex items-center gap-2 text-xs text-[#94A3B8]">
+                <span class="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse"></span>
+                <span>ONLINE</span>
+                <span id="header-ping" class="text-[#64748B]">48ms</span>
+            </div>
+
+            <!-- Sound Toggle -->
+            <button id="sound-toggle" class="p-2 rounded hover:bg-[#1E293B] transition-colors" aria-label="Toggle sound">
+                <svg id="sound-on-icon" class="w-4 h-4 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                </svg>
+                <svg id="sound-off-icon" class="w-4 h-4 text-[#64748B] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+                </svg>
+            </button>
+
+            <!-- GUI/CLI Toggle -->
+            <button id="gui-cli-toggle" class="p-2 rounded hover:bg-[#1E293B] transition-colors" aria-label="Toggle GUI/CLI">
+                <svg id="cli-icon" class="w-4 h-4 text-[#3B82F6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3"/>
+                </svg>
+                <svg id="gui-icon" class="w-4 h-4 text-[#64748B] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- ============================================ -->
+    <!-- MAIN CONTENT                                 -->
+    <!-- ============================================ -->
+    <main id="main-content" class="relative z-10 pt-[100px] pb-12 px-6 opacity-0">
+
+        <!-- ============================================ -->
+        <!-- WELCOME / HERO                               -->
+        <!-- ============================================ -->
+        <section id="welcome" class="text-center mb-12 scroll-reveal">
+            <h1 id="hero-title" class="text-4xl md:text-5xl font-semibold text-[#F1F5F9] uppercase tracking-wider mb-4">
+                WELCOME TO SISTEM BENZ
+            </h1>
+            <div class="w-[60px] h-[2px] bg-[#3B82F6] mx-auto mb-6"></div>
+            <p class="max-w-[600px] mx-auto text-sm text-[#94A3B8] leading-relaxed mb-6">
+                Centralized command interface for all digital assets within the Benz ecosystem. This system provides unified monitoring, deployment control, and asset management across all active projects.
+            </p>
+
+            <!-- Status Indicators -->
+            <div class="flex flex-wrap justify-center gap-6 text-xs text-[#64748B]">
+                <span>> Status: <span class="text-[#22C55E]">OPERATIONAL</span></span>
+                <span>> Active Projects: <span class="text-[#F1F5F9]">4</span></span>
+                <span>> Last Sync: <span class="text-[#F1F5F9]">2 minutes ago</span></span>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SYSTEM MONITOR                               -->
+        <!-- ============================================ -->
+        <section id="system-monitor" class="max-w-4xl mx-auto mb-8 scroll-reveal">
+            <div class="bg-[#0F172A] border border-[#1E293B] rounded-lg p-4">
+                <div class="flex flex-wrap gap-6">
+
+                    <!-- CPU -->
+                    <div class="flex-1 min-w-[200px]">
+                        <div class="flex justify-between text-xs text-[#94A3B8] mb-1">
+                            <span>CPU</span>
+                            <span id="cpu-text">42%</span>
+                        </div>
+                        <div class="w-full h-2 bg-[#1E293B] rounded-full overflow-hidden">
+                            <div id="cpu-bar" class="h-full bg-[#3B82F6] rounded-full transition-all duration-500" style="width: 42%"></div>
                         </div>
                     </div>
 
-                    <h2 class="profile__name">Benz.id</h2>
-                    <h3 class="profile__profession">WebDevr</h3>
-
-                    <ul class="profile__social">
-                        <a
-                            href="https://instagram.com"
-                            target="_blank"
-                            class="profile__social-link"
-                        >
-                            <i class="ri-instagram-line"></i>
-                        </a>
-                        <a
-                            href="https://linkedin.com"
-                            target="_blank"
-                            class="profile__social-link"
-                        >
-                            <i class="ri-linkedin-box-line"></i>
-                        </a>
-                        <a
-                            href="https://github.com"
-                            target="_blank"
-                            class="profile__social-link"
-                        >
-                            <i class="ri-github-line"></i>
-                        </a>
-                    </ul>
-                </div>
-
-                <div class="profile__info grid">
-                    <div class="profile__info-group">
-                        <h3 class="profile__info-number">1+</h3>
-                        <p class="profile__info-description">
-                            Tahun <br />
-                            Pengalaman
-                        </p>
+                    <!-- RAM -->
+                    <div class="flex-1 min-w-[200px]">
+                        <div class="flex justify-between text-xs text-[#94A3B8] mb-1">
+                            <span>RAM</span>
+                            <span id="ram-text">45%</span>
+                        </div>
+                        <div class="w-full h-2 bg-[#1E293B] rounded-full overflow-hidden">
+                            <div id="ram-bar" class="h-full bg-[#60A5FA] rounded-full transition-all duration-500" style="width: 45%"></div>
+                        </div>
                     </div>
-                    <div class="profile__info-group">
-                        <h3 class="profile__info-number">2+</h3>
-                        <p class="profile__info-description">
-                            Proyek <br />
-                            Selesai
-                        </p>
-                    </div>
-                    <div class="profile__info-group">
-                        <h3 class="profile__info-number">1+</h3>
-                        <p class="profile__info-description">
-                            project<br />
-                            recommended
-                        </p>
-                    </div>
-                </div>
 
-                <div class="profile__buttons">
-                    <a download="" href="assets/pdf/My-CV.pdf" class="button">
-                        Download CV <i class="ri-download-line"></i>
-                    </a>
-
-                    <div class="profile__buttons-small">
-                        <a
-                            href="https://whatsapp.com"
-                            target="_blank"
-                            class="button button__small button__gray"
-                        >
-                            <i class="ri-whatsapp-line"></i>
-                        </a>
-                        <a
-                            href="https://messenger.com"
-                            target="_blank"
-                            class="button button__small button__gray"
-                        >
-                            <i class="ri-messenger-line"></i>
-                        </a>
+                    <!-- UPTIME -->
+                    <div class="flex-1 min-w-[150px]">
+                        <div class="text-xs text-[#94A3B8] mb-1">UPTIME</div>
+                        <div id="uptime-text" class="text-sm text-[#F1F5F9]">12d 00:00:00</div>
                     </div>
+
+                    <!-- NETWORK -->
+                    <div class="flex-1 min-w-[150px]">
+                        <div class="text-xs text-[#94A3B8] mb-1">NETWORK</div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse"></span>
+                            <span class="text-[#F1F5F9]">ONLINE</span>
+                            <span id="network-ping" class="text-[#64748B]">48ms</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-        </header>
+        </section>
 
-        <main class="main">
-            <section class="filters container">
-                <ul class="filters__content">
-                    <button
-                        class="filters__button filter-tab-active"
-                        data-target="#projects"
-                    >
-                        Projects
-                    </button>
-                    <button class="filters__button" data-target="#skills">
-                        Skills
-                    </button>
-                </ul>
+        <!-- ============================================ -->
+        <!-- TERMINAL / CLI                               -->
+        <!-- ============================================ -->
+        <section id="terminal-section" class="max-w-4xl mx-auto scroll-reveal">
+            <div class="bg-[#0F172A] border border-[#1E293B] rounded-lg overflow-hidden min-h-[400px]">
 
-                <div class="filters__sections">
-                    <div
-                        class="projects__content grid filters__active"
-                        data-content
-                        id="projects"
-                    >
-                        <article class="projects__card">
-                            <img
-                                src="toren.png"
-                                alt=""
-                                class="projects__img"
-                            />
-                            <div class="projects__modal">
-                                <div>
-                                    <span class="projects__subtitle">Web</span>
-                                    <h3 class="projects__title">
-                                        Toren Master Pro
-                                    </h3>
-                                    <a
-                                        href="toren.html"
-                                        class="projects__button button button__small"
-                                    >
-                                        <i class="ri-link"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="projects__card">
-                            <img
-                                src="gambar/fortofolio.png"
-                                alt=""
-                                class="projects__img"
-                            />
-                            <div class="projects__modal">
-                                <div>
-                                    <span class="projects__subtitle">Web</span>
-                                    <h3 class="projects__title">
-                                        Fortofolio V2
-                                    </h3>
-                                    <a
-                                        href="fortofolio.html"
-                                        class="projects__button button button__small"
-                                    >
-                                        <i class="ri-link"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-
-                    <div class="skills__content grid" data-content id="skills">
-                        <div class="skills__area">
-                            <h3 class="skills__title">Frontend Developer</h3>
-                            <div class="skills__box">
-                                <div class="skills__group">
-                                    <div class="skills__data">
-                                        <i class="ri-checkbox-circle-line"></i>
-                                        <div>
-                                            <h3 class="skills__name">HTML</h3>
-                                            <span class="skills__level"
-                                                >Basic</span
-                                            >
-                                        </div>
-                                    </div>
-                                    <div class="skills__data">
-                                        <i class="ri-checkbox-circle-line"></i>
-                                        <div>
-                                            <h3 class="skills__name">CSS</h3>
-                                            <span class="skills__level"
-                                                >Advanced</span
-                                            >
-                                        </div>
-                                    </div>
-                                    <div class="skills__data">
-                                        <i class="ri-checkbox-circle-line"></i>
-                                        <div>
-                                            <h3 class="skills__name">
-                                                JavaScript
-                                            </h3>
-                                            <span class="skills__level"
-                                                >Intermediate</span
-                                            >
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="skills__area">
-                            <h3 class="skills__title">Backend Developer</h3>
-                            <div class="skills__box">
-                                <div class="skills__group">
-                                    <div class="skills__data">
-                                        <i class="ri-checkbox-circle-line"></i>
-                                        <div>
-                                            <h3 class="skills__name">PHP</h3>
-                                            <span class="skills__level"
-                                                >Intermediate</span
-                                            >
-                                        </div>
-                                    </div>
-                                    <div class="skills__data">
-                                        <i class="ri-checkbox-circle-line"></i>
-                                        <div>
-                                            <h3 class="skills__name">MySQL</h3>
-                                            <span class="skills__level"
-                                                >Basic</span
-                                            >
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Terminal Header -->
+                <div class="flex items-center justify-between px-4 py-2 border-b border-[#1E293B] bg-[#0A0F1C]">
+                    <span class="text-xs text-[#64748B]">user@guest:~$</span>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-[#1E293B] border border-[#334155]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#1E293B] border border-[#334155]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#1E293B] border border-[#334155]"></span>
                     </div>
                 </div>
-            </section>
-        </main>
 
-        <footer class="footer container">
-            <span class="footer__copy">
-                &#169; Benzid. All rigths reserved
-            </span>
-        </footer>
+                <!-- Terminal Output -->
+                <div id="terminal-output" class="p-4 min-h-[300px] max-h-[500px] overflow-y-auto">
+                    <div class="text-xs text-[#64748B] mb-2">BENZ.SYSTEM vPre1.0.0 — Type 'help' for available commands</div>
+                    <div class="text-xs text-[#64748B] mb-4">Connected to client server. Session ID: <span class="text-[#3B82F6]">#7A3F9C</span></div>
+                </div>
 
-        <script src="https://unpkg.com/scrollreveal"></script>
+                <!-- Terminal Input -->
+                <div class="flex items-center px-4 py-3 border-t border-[#1E293B]">
+                    <span class="text-xs text-[#22C55E] mr-2">user@guest</span>
+                    <span class="text-xs text-[#F1F5F9] mr-2">:~$</span>
+                    <input 
+                        id="terminal-input" 
+                        type="text" 
+                        class="flex-1 bg-transparent text-xs text-[#F1F5F9] outline-none font-mono" 
+                        autocomplete="off" 
+                        spellcheck="false"
+                        autofocus
+                    >
+                    <span id="terminal-cursor" class="w-[2px] h-4 bg-[#3B82F6] animate-blink ml-0.5"></span>
+                </div>
 
-        <script src="assets/js/main.js"></script>
-    </body>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================ -->
+    <!-- FOOTER                                       -->
+    <!-- ============================================ -->
+    <footer class="relative z-10 border-t border-[#1E293B] py-6 px-6 text-center">
+        <p class="text-xs text-[#64748B]">BENZ.SYSTEM vPre1.0.0 — All systems operational</p>
+        <p class="text-[10px] text-[#334155] mt-1">Session active • Secure connection</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+</body>
 </html>
