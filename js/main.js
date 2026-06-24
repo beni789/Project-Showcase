@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             size: "12.4 KB",
             edited: "2h ago",
             description: "Main portfolio website",
-            url: "fortofolio.html"
+            url:"https://project-showcase-mauve.vercel.app/fortofolio.html"
         },
         {
             name: "toren master.html",
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             size: "8.2 KB",
             edited: "1d ago",
             description: "game fill water into the tower and sell it then upgrade ",
-            url: "toren.html"
+            url:"https://project-showcase-mauve.vercel.app/toren.html"
         },
         {
             name: "blog.html",
@@ -493,32 +493,35 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         open: {
-            description: 'Buka file di browser',
-            execute: (args) => {
-                if (!args || args.length === 0) {
-                    addTerminalLine('Usage: open <filename>', 'error');
-                    return;
-                }
-
-                const filename = args[0];
-                const file = systemFiles.find(f => f.name.toLowerCase() === filename.toLowerCase());
-
-                if (!file) {
-                    addTerminalLine(`File not found: ${filename}`, 'error');
-                    return;
-                }
-
-                if (file.status === 'offline') {
-                    addTerminalLine(`Cannot open: ${filename} is offline`, 'error');
-                    return;
-                }
-
-                addTerminalLine(`Opening ${filename}...`, 'success');
-                setTimeout(() => {
-                    window.open(file.url, '_blank');
-                }, 500);
-            }
+    description: 'Buka file di browser',
+    execute: (args) => {
+        if (!args || args.length === 0) {
+            addTerminalLine('Usage: open <filename>', 'error');
+            return;
         }
+        
+        const filename = args[0];
+        const file = systemFiles.find(f => f.name.toLowerCase() === filename.toLowerCase());
+        
+        if (!file) {
+            addTerminalLine(`File not found: ${filename}`, 'error');
+            return;
+        }
+        
+        if (file.status === 'offline') {
+            addTerminalLine(`Cannot open: ${filename} is offline`, 'error');
+            return;
+        }
+        
+        addTerminalLine(`Opening ${filename}...`, 'success');
+        
+        // FIX: Pakai location.href untuk semua URL (lokal & external)
+        setTimeout(() => {
+            window.location.href = file.url;
+        }, 500);
+    }
+}
+
     };
 
     // Event listener untuk input terminal
