@@ -16,16 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
             size: "12.4 KB",
             edited: "2h ago",
             description: "Main portfolio website",
-            url: "https://project-showcase-mauve.vercel.app/fortofolio.html"
+            url: "fortofolio.html"
         },
         {
-            name: "toren master pro.html",
+            name: "toren master.html",
             type: "page",
             status: "live",
             size: "8.2 KB",
             edited: "1d ago",
             description: "game fill water into the tower and sell it then upgrade ",
-            url: "https://project-showcase-mauve.vercel.app/toren.html"
+            url: "toren.html"
         },
         {
             name: "blog.html",
