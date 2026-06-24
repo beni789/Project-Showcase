@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             url: "https://project-showcase-mauve.vercel.app/fortofolio.html"
         },
         {
-            name: "toren master.html",
+            name: "toren-master.html",
             type: "page",
             status: "live",
             size: "8.2 KB",
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             size: "5.1 KB",
             edited: "3d ago",
             description: "Blog system (under development)",
-            url: "./blog.html"
+            url: "Not available"
         },
         {
             name: "landing-v1.html",
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             size: "3.5 KB",
             edited: "1w ago",
             description: "Legacy landing page",
-            url: "./landing-v1.html"
+            url: "---"
         }
     ];
 
